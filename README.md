@@ -11,7 +11,7 @@ If you found any mistakes in the solutions, please create an issue or contact me
 
 ## Current Progress
 
-* [ ] Problem Set 0: Turtle Graphics
+* [x] Problem Set 0: Turtle Graphics
 * [ ] Problem Set 1: Tweet Tweet
 * [ ] Problem Set 2: Poetic Walks
 * [ ] Problem Set 3: Expressivo
