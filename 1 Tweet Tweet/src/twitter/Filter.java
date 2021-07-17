@@ -3,7 +3,9 @@
  */
 package twitter;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Filter consists of methods that filter a list of tweets for those matching a
@@ -27,7 +29,14 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> writtenBy(List<Tweet> tweets, String username) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> result = new ArrayList<>();
+        for (Tweet tweet : tweets) {
+            String author = tweet.getAuthor();
+            if (author.equalsIgnoreCase(username)) {
+                result.add(tweet);
+            }
+        }
+        return result;
     }
 
     /**
@@ -41,7 +50,16 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> inTimespan(List<Tweet> tweets, Timespan timespan) {
-        throw new RuntimeException("not implemented");
+        Instant start = timespan.getStart(), end = timespan.getEnd();
+
+        List<Tweet> result = new ArrayList<>();
+        for (Tweet tweet : tweets) {
+            Instant timestamp = tweet.getTimestamp();
+            if (timestamp.compareTo(start) >= 0 && timestamp.compareTo(end) <= 0) {
+                result.add(tweet);
+            }
+        }
+        return result;
     }
 
     /**
@@ -60,7 +78,33 @@ public class Filter {
      *         same order as in the input list.
      */
     public static List<Tweet> containing(List<Tweet> tweets, List<String> words) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> result = new ArrayList<>();
+        for (Tweet tweet : tweets) {
+            String text = tweet.getText();
+            for (String word : text.split(" ")) {
+                if (containsIgnoreCase(words, word)) {
+                    result.add(tweet);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @param words
+     *            a list of strings, not modified by this method.
+     * @param str
+     *            a string to be looked for.
+     * @return words contains str, ignoring cases.
+     */
+    private static boolean containsIgnoreCase(List<String> words, String str) {
+        for (String word : words) {
+            if (word.equalsIgnoreCase(str)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
