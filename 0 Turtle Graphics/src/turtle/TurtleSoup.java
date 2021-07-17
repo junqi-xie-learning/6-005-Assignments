@@ -60,7 +60,7 @@ public class TurtleSoup {
     public static void drawRegularPolygon(Turtle turtle, int sides, int sideLength) {
         for (int i = 0; i < sides; i++) {
             turtle.forward(sideLength);
-            turtle.turn(calculateRegularPolygonAngle(sides));
+            turtle.turn(180 - calculateRegularPolygonAngle(sides));
         }
     }
 
