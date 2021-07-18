@@ -4,7 +4,10 @@
 package twitter;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Set;
 
 /**
@@ -41,7 +44,19 @@ public class SocialNetwork {
      *         either authors or @-mentions in the list of tweets.
      */
     public static Map<String, Set<String>> guessFollowsGraph(List<Tweet> tweets) {
-        throw new RuntimeException("not implemented");
+        Map<String, Set<String>> result = new HashMap<>();
+        for (Tweet tweet : tweets) {
+            String author = tweet.getAuthor().toLowerCase();
+            if (!result.containsKey(author)) {
+                List<Tweet> writtenBy = Filter.writtenBy(tweets, author);
+                Set<String> mentionedUsers = Extract.getMentionedUsers(writtenBy);
+                if (mentionedUsers.contains(author)) {
+                    mentionedUsers.remove(author);
+                }
+                result.put(author, mentionedUsers);
+            }
+        }
+        return result;
     }
 
     /**
@@ -54,7 +69,28 @@ public class SocialNetwork {
      *         descending order of follower count.
      */
     public static List<String> influencers(Map<String, Set<String>> followsGraph) {
-        throw new RuntimeException("not implemented");
+        Map<String, Integer> followers = new HashMap<>();
+        for (String username : followsGraph.keySet()) {
+            followers.putIfAbsent(username.toLowerCase(), 0);
+            for (String follow : followsGraph.get(username)) {
+                follow = follow.toLowerCase();
+                followers.putIfAbsent(follow, 0);
+                followers.replace(follow, followers.get(follow) + 1);
+            }
+        }
+
+        TreeMap<Integer, List<String>> sorted = new TreeMap<>();
+        for (String username : followers.keySet()) {
+            int count = followers.get(username);
+            sorted.putIfAbsent(count, new ArrayList<>());
+            sorted.get(count).add(username);
+        }
+
+        List<String> result = new ArrayList<>();
+        for (int count : sorted.descendingKeySet()) {
+            result.addAll(sorted.get(count));
+        }
+        return result;
     }
 
 }

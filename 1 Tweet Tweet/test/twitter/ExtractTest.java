@@ -117,7 +117,7 @@ public class ExtractTest {
     @Test
     public void testGetMentionedUsersNoRepeated() {
         Set<String> mentionedUsers = Extract.getMentionedUsers(Arrays.asList(tweet3));
-        Set<String> expected = Set.of("@mit", "@mitopenlearning");
+        Set<String> expected = Set.of("mit", "mitopenlearning");
         
         assertTrue("expected results", expected.equals(toLowerCase(mentionedUsers)));
     }
@@ -125,7 +125,7 @@ public class ExtractTest {
     @Test
     public void testGetMentionedUsersRepeated() {
         Set<String> mentionedUsers = Extract.getMentionedUsers(Arrays.asList(tweet4));
-        Set<String> expected = Set.of("@mit", "@mitocw");
+        Set<String> expected = Set.of("mit", "mitocw");
 
         assertTrue("expected results", expected.equals(toLowerCase(mentionedUsers)));
     }
@@ -133,7 +133,7 @@ public class ExtractTest {
     @Test
     public void testGetMentionedUsersCaseInsensitive() {
         Set<String> mentionedUsers = Extract.getMentionedUsers(Arrays.asList(tweet3, tweet4));
-        Set<String> expected = Set.of("@mit", "@mitopenlearning", "@mitocw");
+        Set<String> expected = Set.of("mit", "mitopenlearning", "mitocw");
 
         assertTrue("expected results", expected.equals(toLowerCase(mentionedUsers)));
     }

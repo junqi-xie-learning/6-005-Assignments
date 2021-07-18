@@ -88,7 +88,7 @@ public class Extract {
      * @return The username-mention starting at pos.
      */
     private static String getUsernameMention(String text, int start) {
-        StringBuilder builder = new StringBuilder("@");
+        StringBuilder builder = new StringBuilder();
         for (int i = start + 1; i < text.length() && isValidChar(text.charAt(i)); i++) {
             builder.append(text.charAt(i));
         }
