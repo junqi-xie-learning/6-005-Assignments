@@ -12,7 +12,7 @@ If you found any mistakes in the solutions, please create an issue or contact me
 ## Current Progress
 
 * [x] Problem Set 0: Turtle Graphics
-* [ ] Problem Set 1: Tweet Tweet
+* [x] Problem Set 1: Tweet Tweet
 * [ ] Problem Set 2: Poetic Walks
 * [ ] Problem Set 3: Expressivo
 * [ ] Problem Set 4: Multiplayer Minesweeper
