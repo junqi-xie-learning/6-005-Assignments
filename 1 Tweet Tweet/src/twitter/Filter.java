@@ -81,7 +81,7 @@ public class Filter {
         List<Tweet> result = new ArrayList<>();
         for (Tweet tweet : tweets) {
             String text = tweet.getText();
-            for (String word : text.split(" ")) {
+            for (String word : text.split("\\s")) {
                 if (containsIgnoreCase(words, word)) {
                     result.add(tweet);
                     break;

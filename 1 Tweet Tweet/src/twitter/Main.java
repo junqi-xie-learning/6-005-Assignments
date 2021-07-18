@@ -61,7 +61,7 @@ public class Main {
         System.err.println("covers " + mentionedUsers.size() + " Twitter users");
         
         // infer the follows graph
-        final Map<String, Set<String>> followsGraph = SocialNetwork.guessFollowsGraph(tweets);
+        final Map<String, Set<String>> followsGraph = SmartSocialNetwork.guessFollowsGraph(tweets);
         System.err.println("follows graph has " + followsGraph.size() + " nodes");
         
         // print the top-N influencers
