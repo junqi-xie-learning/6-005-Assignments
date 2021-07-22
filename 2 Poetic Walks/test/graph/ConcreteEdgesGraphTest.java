@@ -29,17 +29,58 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
      */
     
     // Testing strategy for ConcreteEdgesGraph.toString()
-    //   TODO
-    
-    // TODO tests for ConcreteEdgesGraph.toString()
+    //   edges in graph: 0, 1, >1
+
+    @Test
+    public void testEdgesGraphToStringEmpty() {
+        assertEquals("expected empty graph to string",
+                "", new ConcreteEdgesGraph().toString());
+    }
+
+    @Test
+    public void testEdgesGraphToStringSingleEdge() {
+        Graph<String> graph = new ConcreteEdgesGraph();
+        graph.set("source", "target", 1);
+        assertEquals("expected graph with a single edge to string",
+                "(source -> target, 1)", graph.toString());
+    }
+
+    @Test
+    public void testEdgesGraphToStringMultipleEdges() {
+        Graph<String> graph = new ConcreteEdgesGraph();
+        graph.set("source", "target", 1);
+        graph.set("target", "source", 2);
+        assertEquals("expected graph with multiple edges to string",
+                "(source -> target, 1)\n(target -> source, 2)", graph.toString());
+    }
     
     /*
      * Testing Edge...
      */
     
     // Testing strategy for Edge
-    //   TODO
-    
-    // TODO tests for operations of Edge
+    //   constructor
+    //     weight: nonpositive, positive
+    //   toString()
+
+    @Test
+    public void testEdgePositive() {
+        Edge edge = new Edge("source", "target", 1);
+        assertEquals("expected source label", "source", edge.getSource());
+        assertEquals("expected source label", "target", edge.getTarget());
+        assertEquals("expected source label", 1, edge.getWeight());
+    }
+
+    @Test(expected=AssertionError.class)
+    public void testEdgeNonpositive() {
+        Edge edge = new Edge("source", "target", 0);
+        // exception expected
+    }
+
+    @Test
+    public void testEdgeToString() {
+        Edge edge = new Edge("source", "target", 1);
+        assertEquals("expected string", "(source -> target, 1)", edge.toString());
+    }
     
 }
