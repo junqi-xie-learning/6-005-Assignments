@@ -5,6 +5,9 @@ package graph;
 
 import static org.junit.Assert.*;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.junit.Test;
 
 /**
@@ -29,17 +32,120 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
      */
     
     // Testing strategy for ConcreteVerticesGraph.toString()
-    //   TODO
+    //   edges in graph: 0, 1, >1
     
-    // TODO tests for ConcreteVerticesGraph.toString()
+    @Test
+    public void testVerticesGraphToStringEmpty() {
+        assertEquals("expected empty graph to string",
+                "", new ConcreteVerticesGraph().toString());
+    }
+
+    @Test
+    public void testVerticesGraphToStringSingleEdge() {
+        Graph<String> graph = new ConcreteVerticesGraph();
+        graph.set("source", "target", 1);
+        assertEquals("expected graph with a single edge to string",
+                "(source -> target, 1)", graph.toString());
+    }
+
+    @Test
+    public void testVerticesGraphToStringMultipleEdges() {
+        Graph<String> graph = new ConcreteVerticesGraph();
+        graph.set("source", "target", 1);
+        graph.set("target", "source", 2);
+        assertEquals("expected graph with multiple edges to string",
+                "(source -> target, 1)\n(target -> source, 2)", graph.toString());
+    }
     
     /*
      * Testing Vertex...
      */
     
     // Testing strategy for Vertex
-    //   TODO
+    //   set(target, weight)
+    //     target: exists, doesn't exist
+    //     source equals target or doesn't
+    //   toString()
+    //     targets number: 0, 1, >1
     
-    // TODO tests for operations of Vertex
-    
+    @Test
+    public void testVertexAddEdge() {
+        Vertex vertex = new Vertex("source");
+        int result = vertex.set("target", 1);
+        assertEquals("expected edge from source",
+                Map.of("target", 1), vertex.getTargets());
+        assertEquals("expected no such edge", 0, result);
+    }
+
+    @Test
+    public void testVertexAddLoop() {
+        Vertex vertex = new Vertex("init");
+        int result = vertex.set("init", 1);
+        assertEquals("expected edge from init",
+                Map.of("init", 1), vertex.getTargets());
+        assertEquals("expected no such edge", 0, result);
+    }
+
+    @Test
+    public void testVertexChange() {
+        Vertex vertex = new Vertex("source");
+        vertex.set("target", 1);
+        int result = vertex.set("target", 2);
+        assertEquals("expected edge from source",
+                Map.of("target", 2), vertex.getTargets());
+        assertEquals("expected previous weight of edge", 1, result);
+    }
+
+    @Test
+    public void testVertexRemoveEdge() {
+        Vertex vertex = new Vertex("source");
+        vertex.set("target", 1);
+        int result = vertex.set("target", 0);
+        assertEquals("expected no edges from source",
+                Collections.emptyMap(), vertex.getTargets());
+        assertEquals("expected previous weight of edge", 1, result);
+    }
+
+    @Test
+    public void testVertexRemoveEmpty() {
+        Vertex vertex = new Vertex("source");
+        int result = vertex.set("target", 0);
+        assertEquals("expected no edges from source",
+                Collections.emptyMap(), vertex.getTargets());
+        assertEquals("expected no such edge", 0, result);
+    }
+
+    @Test
+    public void testVertexRemoveLoop() {
+        Vertex vertex = new Vertex("init");
+        vertex.set("init", 1);
+        int result = vertex.set("init", 0);
+        assertEquals("expected no edges from init",
+                Collections.emptyMap(), vertex.getTargets());
+        assertEquals("expected previous weight of edge", 1, result);
+    }
+
+    @Test
+    public void testVertexToStringEmpty() {
+        assertEquals("expected empty graph to string",
+                "", new Vertex("init").toString());
+    }
+
+    @Test
+    public void testEdgesGraphToStringSingleEdge() {
+        Vertex vertex = new Vertex("source");
+        vertex.set("target", 1);
+        assertEquals("expected graph with a single edge to string",
+                "(source -> target, 1)", vertex.toString());
+    }
+
+    @Test
+    public void testEdgesGraphToStringMultipleEdges() {
+        Vertex vertex = new Vertex("source");
+        vertex.set("target", 1);
+        vertex.set("source", 2);
+        assertEquals("expected graph with multiple edges to string",
+                "(source -> source, 2)\n(source -> target, 1)", vertex.toString());
+    }
+
 }
