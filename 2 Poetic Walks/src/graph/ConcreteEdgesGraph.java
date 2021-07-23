@@ -16,10 +16,10 @@ import java.util.NoSuchElementException;
  * 
  * <p>PS2 instructions: you MUST use the provided rep.
  */
-public class ConcreteEdgesGraph implements Graph<String> {
+public class ConcreteEdgesGraph<L> implements Graph<L> {
     
-    private final Set<String> vertices = new HashSet<>();
-    private final List<Edge> edges = new ArrayList<>();
+    private final Set<L> vertices = new HashSet<>();
+    private final List<Edge<L>> edges = new ArrayList<>();
     
     // Abstraction function:
     //   vertices represents the vertices in the graph
@@ -29,16 +29,16 @@ public class ConcreteEdgesGraph implements Graph<String> {
     //   vertices contains all the vertices in edges
     //   edges don't contain edges from the same source to the same target
     // Safety from rep exposure:
-    //   String and int are immutable
-    //   Set<String> and List<Edge> are never returned, and are declared as private final
+    //   L and int are immutable
+    //   Set<L> and List<Edge<L>> are never returned, and are declared as private final
     
     /**
      * Check the rep invariant.
      */
     private void checkRep() {
-        Map<String, Set<String>> relations = new HashMap<>();
-        for (Edge edge : edges) {
-            String source = edge.getSource(), target = edge.getTarget();
+        Map<L, Set<L>> relations = new HashMap<>();
+        for (Edge<L> edge : edges) {
+            L source = edge.getSource(), target = edge.getTarget();
             assert vertices.contains(source) == true;
             assert vertices.contains(target) == true;
             relations.putIfAbsent(source, new HashSet<>());
@@ -47,7 +47,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
         }
     }
 
-    @Override public boolean add(String vertex) {
+    @Override public boolean add(L vertex) {
         boolean included = !vertices.add(vertex);
         checkRep();
         return included;
@@ -61,8 +61,8 @@ public class ConcreteEdgesGraph implements Graph<String> {
      * @return the edge from source vertex to target vertex
      * @throws NoSuchElementException if not found
      */
-    private Edge findEdge(String source, String target) throws NoSuchElementException {
-        for (Edge edge : edges) {
+    private Edge<L> findEdge(L source, L target) throws NoSuchElementException {
+        for (Edge<L> edge : edges) {
             if (source == edge.getSource() && target == edge.getTarget()) {
                 return edge;
             }
@@ -70,7 +70,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
         throw new NoSuchElementException();
     }
 
-    @Override public int set(String source, String target, int weight) {
+    @Override public int set(L source, L target, int weight) {
         assert weight >= 0;
         if (weight > 0) {
             vertices.add(source);
@@ -79,7 +79,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
 
         int original;
         try {
-            Edge edge = findEdge(source, target);
+            Edge<L> edge = findEdge(source, target);
             original = edge.getWeight();
             edges.remove(edge);
         }
@@ -87,7 +87,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
             original = 0;
         }
         if (weight > 0) {
-            edges.add(new Edge(source, target, weight));
+            edges.add(new Edge<L>(source, target, weight));
         }
         
         checkRep();
@@ -100,9 +100,9 @@ public class ConcreteEdgesGraph implements Graph<String> {
      * @param vertex label of the vertex
      * @return the set of edges from or to vertex
      */
-    private Set<Edge> findVertexEdges(String vertex) {
-        Set<Edge> result = new HashSet<>();
-        for (Edge edge : edges) {
+    private Set<Edge<L>> findVertexEdges(L vertex) {
+        Set<Edge<L>> result = new HashSet<>();
+        for (Edge<L> edge : edges) {
             if (vertex == edge.getSource() || vertex == edge.getTarget()) {
                 result.add(edge);
             }
@@ -110,20 +110,20 @@ public class ConcreteEdgesGraph implements Graph<String> {
         return result;
     }
 
-    @Override public boolean remove(String vertex) {
+    @Override public boolean remove(L vertex) {
         boolean included = vertices.remove(vertex);
         edges.removeAll(findVertexEdges(vertex));
         checkRep();
         return included;
     }
 
-    @Override public Set<String> vertices() {
+    @Override public Set<L> vertices() {
         return vertices;
     }
 
-    @Override public Map<String, Integer> sources(String target) {
-        Map<String, Integer> result = new HashMap<>();
-        for (Edge edge : edges) {
+    @Override public Map<L, Integer> sources(L target) {
+        Map<L, Integer> result = new HashMap<>();
+        for (Edge<L> edge : edges) {
             if (target == edge.getTarget()) {
                 result.put(edge.getSource(), edge.getWeight());
             }
@@ -131,9 +131,9 @@ public class ConcreteEdgesGraph implements Graph<String> {
         return result;
     }
 
-    @Override public Map<String, Integer> targets(String source) {
-        Map<String, Integer> result = new HashMap<>();
-        for (Edge edge : edges) {
+    @Override public Map<L, Integer> targets(L source) {
+        Map<L, Integer> result = new HashMap<>();
+        for (Edge<L> edge : edges) {
             if (source == edge.getSource()) {
                 result.put(edge.getTarget(), edge.getWeight());
             }
@@ -147,7 +147,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
      */
     @Override public String toString() {
         String result = "";
-        for (Edge edge : edges) {
+        for (Edge<L> edge : edges) {
             result = result.concat(edge.toString() + "\n");
         }
         return result.strip();
@@ -162,9 +162,9 @@ public class ConcreteEdgesGraph implements Graph<String> {
  * <p>PS2 instructions: the specification and implementation of this class is
  * up to you.
  */
-class Edge {
+class Edge<L> {
     
-    private final String source, target;
+    private final L source, target;
     private final int weight;
     
     // Abstraction function:
@@ -172,7 +172,7 @@ class Edge {
     // Representation invariant:
     //   weight is a positive integer
     // Safety from rep exposure:
-    //   String and int are immutable, and are declared as private final
+    //   L and int are immutable, and are declared as private final
     
     /**
      * Make an edge.
@@ -182,7 +182,7 @@ class Edge {
      * @param weight positive weight of the edge
      * @return an edge from source vertex to target vertex with weight
      */
-    public Edge(String source, String target, int weight) {
+    public Edge(L source, L target, int weight) {
         this.source = source;
         this.target = target;
         this.weight = weight;
@@ -201,18 +201,18 @@ class Edge {
     /**
      * Get the label of the source vertex.
      * 
-     * @return a string of the source label
+     * @return source label of type L
      */
-    public String getSource() {
+    public L getSource() {
         return source;
     }
 
     /**
      * Get the label of the target vertex.
      * 
-     * @return a string of the source label
+     * @return target label of type L
      */
-    public String getTarget() {
+    public L getTarget() {
         return target;
     }
 
@@ -229,8 +229,8 @@ class Edge {
      * @return a string in the form "(source -> target, weight)"
      */
     @Override public String toString() {
-        return "(" + this.getSource()
-                + " -> " + this.getTarget()
+        return "(" + this.getSource().toString()
+                + " -> " + this.getTarget().toString()
                 + ", " + this.getWeight()
                 + ")";
     }

@@ -24,7 +24,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
      * Provide a ConcreteVerticesGraph for tests in GraphInstanceTest.
      */
     @Override public Graph<String> emptyInstance() {
-        return new ConcreteVerticesGraph();
+        return new ConcreteVerticesGraph<>();
     }
     
     /*
@@ -37,12 +37,12 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void testVerticesGraphToStringEmpty() {
         assertEquals("expected empty graph to string",
-                "", new ConcreteVerticesGraph().toString());
+                "", new ConcreteVerticesGraph<>().toString());
     }
 
     @Test
     public void testVerticesGraphToStringSingleEdge() {
-        Graph<String> graph = new ConcreteVerticesGraph();
+        Graph<String> graph = new ConcreteVerticesGraph<>();
         graph.set("source", "target", 1);
         assertEquals("expected graph with a single edge to string",
                 "(source -> target, 1)", graph.toString());
@@ -50,7 +50,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
     @Test
     public void testVerticesGraphToStringMultipleEdges() {
-        Graph<String> graph = new ConcreteVerticesGraph();
+        Graph<String> graph = new ConcreteVerticesGraph<>();
         graph.set("source", "target", 1);
         graph.set("target", "source", 2);
         assertEquals("expected graph with multiple edges to string",
@@ -70,7 +70,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     
     @Test
     public void testVertexAddEdge() {
-        Vertex vertex = new Vertex("source");
+        Vertex<String> vertex = new Vertex<>("source");
         int result = vertex.set("target", 1);
         assertEquals("expected edge from source",
                 Map.of("target", 1), vertex.getTargets());
@@ -79,7 +79,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
     @Test
     public void testVertexAddLoop() {
-        Vertex vertex = new Vertex("init");
+        Vertex<String> vertex = new Vertex<>("init");
         int result = vertex.set("init", 1);
         assertEquals("expected edge from init",
                 Map.of("init", 1), vertex.getTargets());
@@ -88,7 +88,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
     @Test
     public void testVertexChange() {
-        Vertex vertex = new Vertex("source");
+        Vertex<String> vertex = new Vertex<>("source");
         vertex.set("target", 1);
         int result = vertex.set("target", 2);
         assertEquals("expected edge from source",
@@ -98,7 +98,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
     @Test
     public void testVertexRemoveEdge() {
-        Vertex vertex = new Vertex("source");
+        Vertex<String> vertex = new Vertex<>("source");
         vertex.set("target", 1);
         int result = vertex.set("target", 0);
         assertEquals("expected no edges from source",
@@ -108,7 +108,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
     @Test
     public void testVertexRemoveEmpty() {
-        Vertex vertex = new Vertex("source");
+        Vertex<String> vertex = new Vertex<>("source");
         int result = vertex.set("target", 0);
         assertEquals("expected no edges from source",
                 Collections.emptyMap(), vertex.getTargets());
@@ -117,7 +117,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
     @Test
     public void testVertexRemoveLoop() {
-        Vertex vertex = new Vertex("init");
+        Vertex<String> vertex = new Vertex<>("init");
         vertex.set("init", 1);
         int result = vertex.set("init", 0);
         assertEquals("expected no edges from init",
@@ -128,12 +128,12 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void testVertexToStringEmpty() {
         assertEquals("expected empty graph to string",
-                "", new Vertex("init").toString());
+                "", new Vertex<>("init").toString());
     }
 
     @Test
     public void testEdgesGraphToStringSingleEdge() {
-        Vertex vertex = new Vertex("source");
+        Vertex<String> vertex = new Vertex<>("source");
         vertex.set("target", 1);
         assertEquals("expected graph with a single edge to string",
                 "(source -> target, 1)", vertex.toString());
@@ -141,7 +141,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
     @Test
     public void testEdgesGraphToStringMultipleEdges() {
-        Vertex vertex = new Vertex("source");
+        Vertex<String> vertex = new Vertex<>("source");
         vertex.set("target", 1);
         vertex.set("source", 2);
         assertEquals("expected graph with multiple edges to string",
