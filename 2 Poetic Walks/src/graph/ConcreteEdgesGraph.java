@@ -63,7 +63,7 @@ public class ConcreteEdgesGraph<L> implements Graph<L> {
      */
     private Edge<L> findEdge(L source, L target) throws NoSuchElementException {
         for (Edge<L> edge : edges) {
-            if (source == edge.getSource() && target == edge.getTarget()) {
+            if (source.equals(edge.getSource()) && target.equals(edge.getTarget())) {
                 return edge;
             }
         }
@@ -103,7 +103,7 @@ public class ConcreteEdgesGraph<L> implements Graph<L> {
     private Set<Edge<L>> findVertexEdges(L vertex) {
         Set<Edge<L>> result = new HashSet<>();
         for (Edge<L> edge : edges) {
-            if (vertex == edge.getSource() || vertex == edge.getTarget()) {
+            if (vertex.equals(edge.getSource()) || vertex.equals(edge.getTarget())) {
                 result.add(edge);
             }
         }
@@ -124,7 +124,7 @@ public class ConcreteEdgesGraph<L> implements Graph<L> {
     @Override public Map<L, Integer> sources(L target) {
         Map<L, Integer> result = new HashMap<>();
         for (Edge<L> edge : edges) {
-            if (target == edge.getTarget()) {
+            if (target.equals(edge.getTarget())) {
                 result.put(edge.getSource(), edge.getWeight());
             }
         }
@@ -134,7 +134,7 @@ public class ConcreteEdgesGraph<L> implements Graph<L> {
     @Override public Map<L, Integer> targets(L source) {
         Map<L, Integer> result = new HashMap<>();
         for (Edge<L> edge : edges) {
-            if (source == edge.getSource()) {
+            if (source.equals(edge.getSource())) {
                 result.put(edge.getTarget(), edge.getWeight());
             }
         }

@@ -4,6 +4,7 @@
 package graph;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class ConcreteVerticesGraph<L> implements Graph<L> {
      */
     private Vertex<L> findVertex(L label) throws NoSuchElementException {
         for (Vertex<L> vertex : vertices) {
-            if (label == vertex.getLabel()) {
+            if (label.equals(vertex.getLabel())) {
                 return vertex;
             }
         }
@@ -122,7 +123,12 @@ public class ConcreteVerticesGraph<L> implements Graph<L> {
     }
 
     @Override public Map<L, Integer> targets(L source) {
-        return findVertex(source).getTargets();
+        try {
+            return findVertex(source).getTargets();
+        }
+        catch (NoSuchElementException e) {
+            return Collections.emptyMap();
+        }
     }
 
     /**
