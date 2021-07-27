@@ -17,7 +17,8 @@ package expressivo;
 public interface Expression {
     
     // Datatype definition
-    //   TODO
+    //   Expression = Number(n: int) + Variable(var: String) + 
+    //                Operation(op: String, left: Expression, right: Expression)
     
     /**
      * Parse an expression.
