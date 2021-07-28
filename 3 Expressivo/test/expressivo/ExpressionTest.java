@@ -23,6 +23,12 @@ public class ExpressionTest {
     //       Variable.var: differs in case or doesn't
     //       Operation.op: equals or doesn't
     //       Operation.left, right: in the same order or not
+    //   parse(input)
+    //     Expression type: Number, Variable, Operation
+    //       Operation.op: +, *
+    //       Operation.left, right type: Number, Variable, Operation
+    //       Operations follow order of operations or don't
+    //     input is a valid expression or isn't
 
     private final Expression one = new Number(1);
     private final Expression x = new Variable("x");
@@ -127,6 +133,47 @@ public class ExpressionTest {
         Expression left = new Operation('*', exp1, x);
         Expression exp = new Operation('*', left, one);
         assertNotEquals("expected inequality", exp3, exp);
+    }
+
+    @Test
+    public void testParseNumber() {
+        Expression exp = Expression.parse("1");
+        assertEquals("expected parsed expression", one, exp);
+    }
+
+    @Test
+    public void testParseVariable() {
+        Expression exp = Expression.parse("x");
+        assertEquals("expected parsed expression", x, exp);
+    }
+
+    @Test
+    public void testParsePlus() {
+        Expression exp = Expression.parse("1 + x");
+        assertEquals("expected parsed expression", exp1, exp);
+    }
+
+    @Test
+    public void testParseMultiply() {
+        Expression exp = Expression.parse("x * 1");
+        assertEquals("expected parsed expression", exp2, exp);
+    }
+
+    @Test
+    public void testParseExpressions() {
+        Expression exp = Expression.parse("(1 + x) * (x * 1)");
+        assertEquals("expected parsed expression", exp3, exp);
+    }
+
+    @Test
+    public void testParseIlligal() {
+        try {
+            Expression exp = Expression.parse("3 x");
+            assert false; // should not reach here
+        }
+        catch (IllegalArgumentException e) {
+            assert true;
+        }
     }
 
 }

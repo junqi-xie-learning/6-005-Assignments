@@ -3,6 +3,16 @@
  */
 package expressivo;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+import expressivo.parser.ExpressionLexer;
+import expressivo.parser.ExpressionParser;
+
 /**
  * An immutable data type representing a polynomial expression of:
  *   + and *
@@ -27,7 +37,17 @@ public interface Expression {
      * @throws IllegalArgumentException if the expression is invalid
      */
     public static Expression parse(String input) {
-        throw new RuntimeException("unimplemented");
+        CharStream stream = new ANTLRInputStream(input);
+        ExpressionLexer lexer = new ExpressionLexer(stream);
+        lexer.reportErrorsAsExceptions();
+        TokenStream tokens = new CommonTokenStream(lexer);
+        ExpressionParser parser = new ExpressionParser(tokens);
+        parser.reportErrorsAsExceptions();
+        
+        ParseTree tree = parser.root();
+        ExpressionMaker maker = new ExpressionMaker();
+        new ParseTreeWalker().walk(maker, tree);
+        return maker.getExpression();
     }
     
     /**

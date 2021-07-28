@@ -24,7 +24,7 @@ class Variable implements Expression {
      * Check the rep invariant.
      */
     private void checkRep() {
-        assert var != "";
+        assert var.matches("[a-zA-Z]+");
     }
     
     @Override public String toString() {

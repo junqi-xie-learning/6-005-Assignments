@@ -13,7 +13,7 @@ package expressivo.parser;
 // This adds code to the generated parser.
 @members {
     // This method makes the lexer or parser stop running if it encounters
-    // invalid input and throw a ParseCancellationException.
+    // invalid input and throw a IllegalArgumentException.
     public void reportErrorsAsExceptions() {
         // To prevent any reports to standard error, add this line:
         //removeErrorListeners();
@@ -23,7 +23,7 @@ package expressivo.parser;
                                     Object offendingSymbol,
                                     int line, int charPositionInLine,
                                     String msg, RecognitionException e) {
-                throw new ParseCancellationException(msg, e);
+                throw new IllegalArgumentException(msg, e);
             }
         });
     }
