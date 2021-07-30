@@ -1,5 +1,7 @@
 package expressivo;
 
+import java.util.Map;
+
 class Number implements Expression {
     private final double n;
     
@@ -18,6 +20,15 @@ class Number implements Expression {
     public Number(double n) {
         this.n = n;
         checkRep();
+    }
+
+    /**
+     * Get the number represented
+     * 
+     * @return the number represented
+     */
+    public double getNumber() {
+        return n;
     }
 
     /**
@@ -43,6 +54,10 @@ class Number implements Expression {
 
     @Override public Expression differentiate(String variable) {
         return new Number(0);
+    }
+
+    @Override public Expression simplify(Map<String, Double> environment) {
+        return this;
     }
 
 }

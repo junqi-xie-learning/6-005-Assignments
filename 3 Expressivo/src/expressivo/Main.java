@@ -57,10 +57,20 @@ public class Main {
                 }
                 
                 System.out.println(output);
-            } catch (NoSuchElementException nse) {
+            }
+            catch (IllegalArgumentException e) {
+                // illegal expression encountered in parsing
+                System.out.println("ParseError: unknown expression");
+            }
+            catch (CommandSyntaxException e) {
+                // command syntax error
+                System.out.println(e.getMessage());
+            }
+            catch (NoSuchElementException nse) {
                 // currentExpression was empty
                 System.out.println("must enter an expression before using this command");
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 System.out.println(re.getClass().getName() + ": " + re.getMessage());
             }
         }

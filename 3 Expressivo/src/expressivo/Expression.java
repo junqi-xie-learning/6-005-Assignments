@@ -3,6 +3,8 @@
  */
 package expressivo;
 
+import java.util.Map;
+
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -79,5 +81,16 @@ public interface Expression {
      * @return expression's derivative with respect to variable.
      */
     public Expression differentiate(String variable);
+
+    /**
+     * Simplify an expression.
+     * @param environment maps variables to values. Variables are required to be case-sensitive nonempty 
+     *         strings of letters. The set of variables in environment is allowed to be different than the 
+     *         set of variables actually found in expression. Values must be nonnegative numbers.
+     * @return an expression equal to the input, but after substituting every variable v that appears in both
+     *         the expression and the environment with its value, environment.get(v). If there are no
+     *         variables left in this expression after substitution, it's evaluated to a single number.
+     */
+    public Expression simplify(Map<String, Double> environment);
     
 }
