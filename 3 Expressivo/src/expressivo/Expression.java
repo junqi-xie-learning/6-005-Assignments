@@ -73,6 +73,11 @@ public interface Expression {
     @Override
     public int hashCode();
     
-    // TODO more instance methods
+    /**
+     * Differentiate an expression with respect to a variable.
+     * @param variable the variable to differentiate by, a case-sensitive nonempty string of letters.
+     * @return expression's derivative with respect to variable.
+     */
+    public Expression differentiate(String variable);
     
 }

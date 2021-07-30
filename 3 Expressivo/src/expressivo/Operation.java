@@ -53,4 +53,12 @@ class Operation implements Expression {
         return Character.hashCode(op) + left.hashCode() + right.hashCode();
     }
 
+    @Override public Expression differentiate(String variable) {
+        Expression dLeft = left.differentiate(variable);
+        Expression dRight = right.differentiate(variable);
+
+        return op == '+' ? new Operation('+', dLeft, dRight) :
+            new Operation('+', new Operation('*', dLeft, right), new Operation('*', left, dRight));
+    }
+
 }

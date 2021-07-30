@@ -29,13 +29,22 @@ public class ExpressionTest {
     //       Operation.left, right type: Number, Variable, Operation
     //       Operations follow order of operations or don't
     //     input is a valid expression or isn't
+    //   differentiate(variable)
+    //     Expression type: Number, Variable, Operation
+    //       Operation.op: +, *
+    //       Operation.left, right type: Number, Variable, Operation
+    //     Expression contains the variable or doesn't
+    //     Expression contains other variables or doesn't
 
+    private final Expression zero = new Number(0);
     private final Expression one = new Number(1);
     private final Expression x = new Variable("x");
+    private final Expression y = new Variable("y");
 
     private final Expression exp1 = new Operation('+', one, x);
     private final Expression exp2 = new Operation('*', x, one);
     private final Expression exp3 = new Operation('*', exp1, exp2);
+    private final Expression exp4 = new Operation('*', x, y);
 
     @Test(expected=AssertionError.class)
     public void testAssertionsEnabled() {
@@ -174,6 +183,56 @@ public class ExpressionTest {
         catch (IllegalArgumentException e) {
             assert true;
         }
+    }
+
+    @Test
+    public void testDifferentiateNumber() {
+        assertEquals("expected differentiated expression", one.differentiate("x"), zero);
+    }
+
+    @Test
+    public void testDifferentiateVariable() {
+        assertEquals("expected differentiated expression", x.differentiate("x"), one);
+    }
+
+    @Test
+    public void testDifferentiatePlus() {
+        Expression exp = new Operation('+', zero, one);
+        assertEquals("expected differentiated expression", exp1.differentiate("x"), exp);
+    }
+
+    @Test
+    public void testDifferentiateMultiply() {
+        Expression exp = new Operation('+', new Operation('*', one, one),
+            new Operation('*', x, zero));
+        assertEquals("expected differentiated expression", exp2.differentiate("x"), exp);
+    }
+
+    @Test
+    public void testDifferentiateSingleSameVariable() {
+        Expression left = new Operation('*', new Operation('+', zero, one),
+            new Operation('*', x, one));
+        Expression right = new Operation('*', new Operation('+', one, x),
+            new Operation('+', new Operation('*', one, one), new Operation('*', x, zero)));
+        Expression exp = new Operation('+', left, right);
+        assertEquals("expected differentiated expression", exp3.differentiate("x"), exp);
+    }
+
+    @Test
+    public void testDifferentiateSingleDifferentVariable() {
+        Expression left = new Operation('*', new Operation('+', zero, zero),
+            new Operation('*', x, one));
+        Expression right = new Operation('*', new Operation('+', one, x),
+            new Operation('+', new Operation('*', zero, one), new Operation('*', x, zero)));
+        Expression exp = new Operation('+', left, right);
+        assertEquals("expected differentiated expression", exp3.differentiate("y"), exp);
+    }
+
+    @Test
+    public void testDifferentiateMultipleVariables() {
+        Expression exp = new Operation('+', new Operation('*', one, y),
+            new Operation('*', x, zero));
+        assertEquals("expected differentiated expression", exp4.differentiate("x"), exp);
     }
 
 }

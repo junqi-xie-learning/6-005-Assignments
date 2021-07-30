@@ -41,4 +41,8 @@ class Number implements Expression {
         return Double.hashCode(n);
     }
 
+    @Override public Expression differentiate(String variable) {
+        return new Number(0);
+    }
+
 }

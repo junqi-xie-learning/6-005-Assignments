@@ -41,4 +41,8 @@ class Variable implements Expression {
         return var.hashCode();
     }
 
+    @Override public Expression differentiate(String variable) {
+        return var.equals(variable) ? new Number(1) : new Number(0);
+    }
+
 }
