@@ -14,7 +14,7 @@ If you found any mistakes in the solutions, please create an issue or contact me
 * [x] Problem Set 0: Turtle Graphics
 * [x] Problem Set 1: Tweet Tweet
 * [x] Problem Set 2: Poetic Walks
-* [ ] Problem Set 3: Expressivo
+* [x] Problem Set 3: Expressivo
 * [ ] Problem Set 4: Multiplayer Minesweeper
 * [ ] Project: ABC Music Player
 
