@@ -4,7 +4,7 @@
 package minesweeper;
 
 /**
- * Square represents a mutable board with a grid of squares.
+ * Square represents a mutable and thread-safe board with a grid of squares.
  */
 public class Board {
 
@@ -16,6 +16,9 @@ public class Board {
     //   X, Y are positive
     // Safety from rep exposure:
     //   board is never returned, and is declared as private final
+    // Thread safety argument:
+    //   all accesses to board happen within Board methods,
+    //     which are all guarded by Board's lock
     
     /**
      * Check the rep invariant.
@@ -121,7 +124,7 @@ public class Board {
      * @param y y coordinate of the square to dig
      * @return whether this request cause a bomb to explode
      */
-    public boolean dig(int x, int y) {
+    public synchronized boolean dig(int x, int y) {
         if (checkRange(x, y) && board[x][y].getStatus() == Square.Status.UNTOUCHED) {
             if (board[x][y].getBomb()) {
                 board[x][y].setBomb(false);
@@ -149,7 +152,7 @@ public class Board {
      * @param x x coordinate of the square to flag
      * @param y y coordinate of the square to flag
      */
-    public void flag(int x, int y) {
+    public synchronized void flag(int x, int y) {
         if (checkRange(x, y) && board[x][y].getStatus() == Square.Status.UNTOUCHED) {
             board[x][y].setStatus(Square.Status.FLAGGED);
         }
@@ -161,14 +164,14 @@ public class Board {
      * @param x x coordinate of the square to deflag
      * @param y y coordinate of the square to deflag
      */
-    public void deflag(int x, int y) {
+    public synchronized void deflag(int x, int y) {
         if (checkRange(x, y) && board[x][y].getStatus() == Square.Status.FLAGGED) {
             board[x][y].setStatus(Square.Status.UNTOUCHED);
         }
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         String[][] boardRep = new String[getColumn()][getRow()];
         for (int i = 0; i < getColumn(); i++) {
             for (int j = 0; j < getRow(); j++) {
@@ -186,7 +189,7 @@ public class Board {
 }
 
 /**
- * Square represents a mutable square in the board.
+ * Square represents a mutable and thread-unsafe square in the board.
  * Each square is either _flagged_, _dug_, or _untouched_.
  * Each square either contains a bomb, or does not contain a bomb.
  * Each square stores the count of its neighbors that have a bomb.
