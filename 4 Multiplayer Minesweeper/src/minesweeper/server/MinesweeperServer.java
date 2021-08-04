@@ -17,6 +17,9 @@ public class MinesweeperServer {
     // System thread safety argument
     //   TODO Problem 5
 
+    /** Instance of Board shared by all players. */
+    private static Board board;
+
     /** Default server port. */
     private static final int DEFAULT_PORT = 4444;
     /** Maximum port number as defined by ServerSocket. */
@@ -64,7 +67,8 @@ public class MinesweeperServer {
                     finally {
                         socket.close();
                     }
-                } catch (IOException ioe) {
+                }
+                catch (IOException ioe) {
                     ioe.printStackTrace(); // handle exceptions within the thread
                 }
             }).start();
@@ -89,7 +93,8 @@ public class MinesweeperServer {
                     out.println(output);
                 }
             }
-        } finally {
+        }
+        finally {
             out.close();
             in.close();
         }
@@ -104,7 +109,7 @@ public class MinesweeperServer {
     private String handleRequest(String input) {
         String regex = "(look)|(help)|(bye)|"
                      + "(dig -?\\d+ -?\\d+)|(flag -?\\d+ -?\\d+)|(deflag -?\\d+ -?\\d+)";
-        if ( ! input.matches(regex)) {
+        if (!input.matches(regex)) {
             // invalid input
             // TODO Problem 5
         }
@@ -112,22 +117,27 @@ public class MinesweeperServer {
         if (tokens[0].equals("look")) {
             // 'look' request
             // TODO Problem 5
-        } else if (tokens[0].equals("help")) {
+        }
+        else if (tokens[0].equals("help")) {
             // 'help' request
             // TODO Problem 5
-        } else if (tokens[0].equals("bye")) {
+        }
+        else if (tokens[0].equals("bye")) {
             // 'bye' request
             // TODO Problem 5
-        } else {
+        }
+        else {
             int x = Integer.parseInt(tokens[1]);
             int y = Integer.parseInt(tokens[2]);
             if (tokens[0].equals("dig")) {
                 // 'dig x y' request
                 // TODO Problem 5
-            } else if (tokens[0].equals("flag")) {
+            }
+            else if (tokens[0].equals("flag")) {
                 // 'flag x y' request
                 // TODO Problem 5
-            } else if (tokens[0].equals("deflag")) {
+            }
+            else if (tokens[0].equals("deflag")) {
                 // 'deflag x y' request
                 // TODO Problem 5
             }
@@ -190,40 +200,48 @@ public class MinesweeperServer {
 
         Queue<String> arguments = new LinkedList<String>(Arrays.asList(args));
         try {
-            while ( ! arguments.isEmpty()) {
+            while (!arguments.isEmpty()) {
                 String flag = arguments.remove();
                 try {
                     if (flag.equals("--debug")) {
                         debug = true;
-                    } else if (flag.equals("--no-debug")) {
+                    }
+                    else if (flag.equals("--no-debug")) {
                         debug = false;
-                    } else if (flag.equals("--port")) {
+                    }
+                    else if (flag.equals("--port")) {
                         port = Integer.parseInt(arguments.remove());
                         if (port < 0 || port > MAXIMUM_PORT) {
                             throw new IllegalArgumentException("port " + port + " out of range");
                         }
-                    } else if (flag.equals("--size")) {
+                    }
+                    else if (flag.equals("--size")) {
                         String[] sizes = arguments.remove().split(",");
                         sizeX = Integer.parseInt(sizes[0]);
                         sizeY = Integer.parseInt(sizes[1]);
                         file = Optional.empty();
-                    } else if (flag.equals("--file")) {
+                    }
+                    else if (flag.equals("--file")) {
                         sizeX = -1;
                         sizeY = -1;
                         file = Optional.of(new File(arguments.remove()));
-                        if ( ! file.get().isFile()) {
+                        if (!file.get().isFile()) {
                             throw new IllegalArgumentException("file not found: \"" + file.get() + "\"");
                         }
-                    } else {
+                    }
+                    else {
                         throw new IllegalArgumentException("unknown option: \"" + flag + "\"");
                     }
-                } catch (NoSuchElementException nsee) {
+                }
+                catch (NoSuchElementException nsee) {
                     throw new IllegalArgumentException("missing argument for " + flag);
-                } catch (NumberFormatException nfe) {
+                }
+                catch (NumberFormatException nfe) {
                     throw new IllegalArgumentException("unable to parse number for " + flag);
                 }
             }
-        } catch (IllegalArgumentException iae) {
+        }
+        catch (IllegalArgumentException iae) {
             System.err.println(iae.getMessage());
             System.err.println("usage: MinesweeperServer [--debug | --no-debug] [--port PORT] [--size SIZE_X,SIZE_Y | --file FILE]");
             return;
@@ -231,7 +249,8 @@ public class MinesweeperServer {
 
         try {
             runMinesweeperServer(debug, file, sizeX, sizeY, port);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
     }
@@ -251,10 +270,63 @@ public class MinesweeperServer {
      * @throws IOException if a network error occurs
      */
     public static void runMinesweeperServer(boolean debug, Optional<File> file, int sizeX, int sizeY, int port) throws IOException {
+        assert file.isPresent() || sizeX > 0 && sizeY > 0;
+        assert 0 <= port && port <= 65535;
         
-        // TODO: Continue implementation here in problem 4
-        
+        int[][] boardRep = file.isPresent() ? loadBoard(file.get()) : generateBoard(sizeY, sizeX);
+        board = new Board(boardRep);
         MinesweeperServer server = new MinesweeperServer(port, debug);
         server.serve();
+    }
+
+    /**
+     * Load the board from the specified file.
+     * 
+     * @param file the input file format defined in the documentation for main(..)
+     * @return board representation of the board in integers
+     * @throws RuntimeException if the file doesn't exist or improperly formatted
+     */
+    private static int[][] loadBoard(File file) throws RuntimeException {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String[] line = reader.readLine().split("\\s");
+            int sizeX = Integer.parseInt(line[0]), sizeY = Integer.parseInt(line[1]);
+            int[][] boardRep = new int[sizeY][sizeX];
+
+            for (int i = 0; i < sizeY; i++) {
+                line = reader.readLine().split("\\s");
+                for (int j = 0; j < sizeX; j++) {
+                    boardRep[i][j] = Integer.parseInt(line[j]);
+                }
+            }
+            reader.close();
+            return boardRep;
+        }
+        catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Randomly generate a board, with probability .25 to contain a bomb for each
+     * square
+     * 
+     * @param sizeY the height of the random board
+     * @param sizeX the width of the random board
+     * @return board representation of the board in integers
+     */
+    private static int[][] generateBoard(int sizeY, int sizeX) {
+        int[][] boardRep = new int[sizeY][sizeX];
+        Random random = new Random();
+
+        for (int i = 0; i < sizeY; i++) {
+            for (int j = 0; j < sizeX; j++) {
+                boardRep[i][j] = random.nextDouble() < .25 ? 1 : 0;
+            }
+        }
+        return boardRep;
     }
 }
