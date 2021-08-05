@@ -15,10 +15,13 @@ import minesweeper.Board;
 public class MinesweeperServer {
 
     // System thread safety argument
-    //   TODO Problem 5
+    //   all operations on board are synchronized by thread-safe type Board
+    //   all accesses to players are synchronized by the lock
 
     /** Instance of Board shared by all players. */
     private static Board board;
+    /** Number of players currectly connected. */
+    private static int players;
 
     /** Default server port. */
     private static final int DEFAULT_PORT = 4444;
@@ -32,7 +35,13 @@ public class MinesweeperServer {
     /** True if the server should *not* disconnect a client after a BOOM message. */
     private final boolean debug;
 
-    // TODO: Abstraction function, rep invariant, rep exposure
+    // Abstraction function:
+    //   static variables and methods represent a minesweeper server with a board
+    //   instance variables and methods represent a thread serving a client user
+    // Rep invariant:
+    //   none
+    // Safety from rep exposure:
+    //   board and players are never returned, and are declared as private
 
     /**
      * Make a MinesweeperServer that listens for connections on port.
@@ -84,19 +93,31 @@ public class MinesweeperServer {
     private void handleConnection(Socket socket) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        synchronized (this) {
+            players++;
+        }
 
         try {
+            out.println("Welcome to Minesweeper. Board: " + Integer.toString(board.getColumn()) + " columns by " +
+                Integer.toString(board.getRow()) + " rows. Players: " + Integer.toString(players) +
+                " including you. Type 'help' for help.");
             for (String line = in.readLine(); line != null; line = in.readLine()) {
                 String output = handleRequest(line);
-                if (output != null) {
-                    // TODO: Consider improving spec of handleRequest to avoid use of null
-                    out.println(output);
+                out.println(output);
+                if (output == "BOOM!") {
+                    if (!debug) {
+                        break;
+                    }
                 }
             }
         }
+        catch (InterruptedIOException e) { }
         finally {
             out.close();
             in.close();
+            synchronized (this) {
+                players--;
+            }
         }
     }
 
@@ -104,45 +125,64 @@ public class MinesweeperServer {
      * Handler for client input, performing requested operations and returning an output message.
      * 
      * @param input message from client
-     * @return message to client, or null if none
+     * @return message to client
+     * @throws InterruptedIOException if requested to disconnect
      */
-    private String handleRequest(String input) {
+    private String handleRequest(String input) throws InterruptedIOException {
         String regex = "(look)|(help)|(bye)|"
                      + "(dig -?\\d+ -?\\d+)|(flag -?\\d+ -?\\d+)|(deflag -?\\d+ -?\\d+)";
+        String[] help = {
+            "Your input is specified by the following grammar: ",
+            "MESSAGE ::= ( LOOK | DIG | FLAG | DEFLAG | HELP_REQ | BYE ) NEWLINE",
+            "LOOK ::= \"look\"",
+            "DIG ::= \"dig\" SPACE X SPACE Y",
+            "FLAG ::= \"flag\" SPACE X SPACE Y",
+            "DEFLAG ::= \"deflag\" SPACE X SPACE Y",
+            "HELP_REQ ::= \"help\"",
+            "BYE ::= \"bye\"",
+            "NEWLINE ::= \"\\n\" | \"\\r\" \"\\n\"?",
+            "X ::= INT",
+            "Y ::= INT",
+            "SPACE ::= \" \"",
+            "INT ::= \"-\"? [0-9]+"
+        };
+
         if (!input.matches(regex)) {
             // invalid input
-            // TODO Problem 5
+            return String.join("\r\n", help);
         }
         String[] tokens = input.split(" ");
         if (tokens[0].equals("look")) {
             // 'look' request
-            // TODO Problem 5
+            return board.toString();
         }
         else if (tokens[0].equals("help")) {
             // 'help' request
-            // TODO Problem 5
+            return String.join("\r\n", help);
         }
         else if (tokens[0].equals("bye")) {
             // 'bye' request
-            // TODO Problem 5
+            throw new InterruptedIOException();
         }
         else {
             int x = Integer.parseInt(tokens[1]);
             int y = Integer.parseInt(tokens[2]);
             if (tokens[0].equals("dig")) {
                 // 'dig x y' request
-                // TODO Problem 5
+                return board.dig(y, x) ? "BOOM!" : board.toString();
             }
             else if (tokens[0].equals("flag")) {
                 // 'flag x y' request
-                // TODO Problem 5
+                board.flag(y, x);
+                return board.toString();
             }
             else if (tokens[0].equals("deflag")) {
                 // 'deflag x y' request
-                // TODO Problem 5
+                board.deflag(y, x);
+                return board.toString();
             }
         }
-        // TODO: Should never get here, make sure to return in each of the cases above
+        // Should never get here, make sure to return in each of the cases above
         throw new UnsupportedOperationException();
     }
 
