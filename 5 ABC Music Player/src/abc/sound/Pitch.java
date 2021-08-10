@@ -125,14 +125,15 @@ public class Pitch {
 
         while (v < 0) {
             suffix += ",";
-            v += 12;
+            v += Pitch.OCTAVE;
         }
 
-        while (v >= 12) {
-            suffix += "'";
-            v -= 12;
+        while (v >= 2 * Pitch.OCTAVE) {
+            suffix += "\'";
+            v -= Pitch.OCTAVE;
         }
 
-        return VALUE_TO_STRING[v] + suffix;
+        return v >= Pitch.OCTAVE ? VALUE_TO_STRING[v - Pitch.OCTAVE].toLowerCase() + suffix
+                                 : VALUE_TO_STRING[v] + suffix;
     }
 }
