@@ -1,5 +1,21 @@
 package abc.sound;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
+
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+import abc.parser.AbcLexer;
+import abc.parser.AbcParser;
+import abc.player.MusicMaker;
+
 /**
  * Music represents a piece of music played by multiple instruments.
  */
@@ -17,6 +33,82 @@ public interface Music {
      */
     public static Music empty() {
         return new Rest(0);
+    }
+    
+    /**
+     * Parse the body of an abc file.
+     * 
+     * @param input abc body to parse.
+     * @return music AST for the input
+     */
+    public static Music parse(String input, String key, int ticksPerBeat) {
+        CharStream stream = new ANTLRInputStream(input);
+        AbcLexer lexer = new AbcLexer(stream);
+        lexer.reportErrorsAsExceptions();
+        TokenStream tokens = new CommonTokenStream(lexer);
+        AbcParser parser = new AbcParser(tokens);
+        parser.reportErrorsAsExceptions();
+        
+        ParseTree tree = parser.root();
+        MusicMaker maker = new MusicMaker(getEnvironment(key), ticksPerBeat);
+        new ParseTreeWalker().walk(maker, tree);
+        return maker.getMusic();
+    }
+
+    /**
+     * Generate the semitone environment for the desired key.
+     * 
+     * @param key string representation of the key
+     * @return the semitone environment corresponding to the key
+     */
+    public static Map<String, Integer> getEnvironment(String key) {
+        Map<String, Integer> environment = new HashMap<>();
+        // Intentionally not breaking after cases
+        switch (key) {
+            // Scales with sharp key signatures
+            case "C#": case "A#m":
+                environment.put("B", 1);
+            case "F#": case "D#m":
+                environment.put("E", 1);
+            case "B": case "G#m":
+                environment.put("A", 1);
+            case "E": case "C#m":
+                environment.put("D", 1);
+            case "A": case "F#m":
+                environment.put("G", 1);
+            case "D": case "Bm":
+                environment.put("C", 1);
+            case "G": case "Em":
+                environment.put("F", 1);
+                break;
+            // Scales with flat key signatures
+            case "Cb": case "Abm":
+                environment.put("F", -1);
+            case "Gb": case "Ebm":
+                environment.put("C", -1);
+            case "Db": case "Bbm":
+                environment.put("G", -1);
+            case "Ab": case "Fm":
+                environment.put("D", -1);
+            case "Eb": case "Cm":
+                environment.put("A", -1);
+            case "Bb": case "Gm":
+                environment.put("E", -1);
+            case "F": case "Dm":
+                environment.put("B", -1);
+                break;
+        }
+
+        Set<String> symbols = new HashSet<>(environment.keySet());
+        for (String symbol : symbols) {
+            int semitones = environment.get(symbol);
+            environment.put(symbol + ",", semitones);
+            environment.put(symbol + ",,", semitones);
+            environment.put(symbol.toLowerCase(), semitones);
+            environment.put(symbol.toLowerCase() + "\'", semitones);
+            environment.put(symbol.toLowerCase() + "\'\'", semitones);
+        }
+        return environment;
     }
     
     /**
