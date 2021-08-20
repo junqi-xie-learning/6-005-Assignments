@@ -9,7 +9,7 @@ If you found any mistakes in the solutions, please create an issue or contact me
 
 * This repository was tested with OpenJDK 15 on Windows 10.
 
-## Current Progress
+## Contents
 
 * Problem Set 0: Turtle Graphics
 * Problem Set 1: Tweet Tweet
